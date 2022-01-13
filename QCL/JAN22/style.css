@@ -129,7 +129,7 @@ animation tri 突き上げる三角 ~5.9s
   height: 0;
   border-left: 150vw solid rgba(255, 0, 0, 0);
   border-right: 150vw solid rgba(255, 0, 0, 0);
-  border-bottom: 300vw solid  rgb(255, 251, 189);
+  border-bottom: 300vw solid  rgb(255, 189, 219);
   animation: tri .6s 5.3s linear forwards;
 }
 
