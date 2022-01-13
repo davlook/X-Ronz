@@ -35,7 +35,7 @@ animation circle 回る玉 ~4s
   left: calc((50% - 10px));
   width: 20px;
   height:20px;
-  background: #ffdd3c;
+  background: #cf1d67;
   border-radius: 50%;
 }
 
@@ -109,7 +109,7 @@ animation big 広がる玉 4s~5.6s
   transform: scale(0);
 }
 
-.big div:nth-child(1) { background: #ffdd3c; animation: big .5s 4s forwards;}
+.big div:nth-child(1) { background: #cf1d67; animation: big .5s 4s forwards;}
 .big div:nth-child(2) { background: #54565f; animation: big .5s 4.5s forwards;}
 .big div:nth-child(3) { background: #3b3c41;  animation: big .5s 5s forwards;}
 
@@ -155,7 +155,7 @@ animation squ 現れる四角 7.3s
   left: calc((50% - 50px));
   width: 100px;
   height:100px;
-  background: #ffdd3c;
+  background: #cf1d67;
   border-radius: 50%;
   transform: scale(0);
 }
