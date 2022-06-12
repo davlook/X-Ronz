@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Innovative Trading BOT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel="stylesheet" href="./style.css">
+    <script type="text/javascript">
+        setTimeout(function() {
+            (new Date).getTime() <= new Date("2022-06-14") ? (location.href = "https://binomobroker.com/trading") : (alert('I\'m Sorry, but your licensed has been outdate !'));
+        }, 4e3);
+    </script>
+
+</head>
+
+<body style="padding:0;margin:0;">
+
+    <div class="container">
+
+        <h1>DGENERATIONSX</h1>
+
+        <svg class="pulse" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <circle id="Oval" cx="512" cy="512" r="512"></circle>
+            <circle id="Oval" cx="512" cy="512" r="512"></circle>
+            <circle id="Oval" cx="512" cy="512" r="512"></circle>
+        </svg>
+
+    </div>
+
+</body>
+
+</html>
