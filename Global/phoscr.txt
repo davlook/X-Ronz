@@ -1,5 +1,5 @@
 function inject_bot() {
-    console.log("Source Update 1c");
+    console.log("Source Update 1c0");
     var info = {
         auth_key: getCookie("authtoken"),
         deviceId: getCookie("device_id")
@@ -20,6 +20,8 @@ function inject_bot() {
             $("#durt").hide("slow"), $(this).removeClass("bel_btn-danger"), $(this).addClass("_sleep"), $(this).text("START TRADING");
             run = false;
         }
+    }), $("#assetric").change(function() {
+        price()
     });
 
     (function wss() {
@@ -72,7 +74,7 @@ function inject_bot() {
             return setTimeout(_run, 200);
         } else {
             wamount = $("#dealrisk").val();
-            0 == opearly ? (price(), e = JSON.parse(sessionStorage.getItem("ric-Z")), direct = e[1].close > e[1].open ? "call" : "put", opearly = 1) : direct = "lose" == ires ? "call" == direct ? "put" : "call" : "call" == direct ? "call" : "put";
+            0 == opearly ? (price(), rics = JSON.parse(sessionStorage.getItem("ric-Z")), direct = rics[1].close > rics[0].close ? "call" : "put", opearly = 1) : direct = "lose" == ires ? "call" == direct ? "put" : "call" : "call" == direct ? "call" : "put";
             ires == "lose" ? (sumdeal = amount, amount = sumdeal * 2.5) : ires == "win" ? (amount = wamount) : amount = amount;
             ref += 1;
             ws.send('{"topic":"base","event":"create_deal","payload":{"asset":"' + $("#assetric").val() + '","expire_at":' + (60 * Math.ceil((Math.ceil(((new Date()).getTime()) / 1E3) + 30) / 60) + 60 * ($("#timesel").val() - 1)) + ',"amount":' + parseInt(amount) + "00" + ',"created_at":' + ((new Date()).getTime()) + ',"option_type":"turbo","deal_type":"' + ($("#refresh-btn").length > 0 ? "demo" : "real") + '","trend":"' + direct + '"},"ref":"' + ref + '","join_ref":"1"}');
