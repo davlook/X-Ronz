@@ -1,10 +1,11 @@
 function inject_bot() {
+    console.log("Source Update 1");
     var info = {
         auth_key: getCookie("authtoken"),
         deviceId: getCookie("device_id")
     }
     var as, ws, mes, refsave, orate, crate, otrend, intervalWS, wamount, sumdeal, Betmar, ires, amount, acoef, acurr, coef, curr, direct, ref = 1,
-        marti = 0, bs = 0, ss = 0, md = 0, run = false;
+        run = false;
 
     var pover = '<div class="list-group" style="padding-bottom:2px;padding-top:5px;"><span class="list-group-item d-flex justify-content-between align-items-center" style="padding:9px;color: crimson;" id="accbal"></span></div><div class="form-group"><select class="bel_form-control" id="assetric" style="color: #f6f7f7;background: #3e3f45;border: none;"></select></div><table class="table container-fluid"> <tbody> <tr> <td style="width:60%"> <div class="input-group"> <input type="number" class="bel_form-control" min="14000" max="14000000" step="100" placeholder="Deal Risk" id="dealrisk" value="14000" style="color: #f6f7f7;background: #3e3f45;border: none;"> </div> </td> <td> <div class="form-group"><select class="bel_form-control" id="timesel" style="color: #f6f7f7;background: #3e3f45;border: none;"><option value="1">1 min</option><option value="2">2 min</option><option value="3">3 min</option><option value="4">4 min</option><option value="5">5 min</option></select></div> </td> </tr> </tbody></table><div style="padding:5px;"></div><syk type=button class="bel_btn bel_btn-success container-fluid _sleep" id="startbot"><strong>START TRADING</strong></syk><div id="durt" style="padding-top:10px"></div>';
     $(".investments").before('<syk type="button" id="mybot" data-toggle="modal" data-target="#myModal" class="spinner-border text-warning" style="margin-bottom:7px;margin-left:4px;"></syk>'),
@@ -44,18 +45,12 @@ function inject_bot() {
                         }, 6E4))
                 }
                 refsave = 0;
-                if (mes.payload.asset == $("#assetric").val()) {
-                    (mes.payload.call == mes.payload.put) ? (md += 1, sessionStorage.setItem("SupDem", md)) : ((mes.payload.call > mes.payload.put) ? (bs += 1, sessionStorage.setItem("Buyer", bs)) : (ss += 1, sessionStorage.setItem("Seller", ss)));
-                    (bs == ss) ? (direct == direct) : ((bs > ss) ? (direct = "call") : (direct = "put"));
-                    sessionStorage.setItem("Direction", direct);
-                }
                 if ("deal_created" == mes.event) {
                     orate = mes.payload.open_rate, otrend = mes.payload.trend;
                 }
                 if ("close_deal_batch" == mes.event) {
                     crate = mes.payload.end_rate, (orate == crate) ? (ires = "stand") : ((orate > crate) ? (otrend == "put" ? ires = "win" : ires = "lose") : (otrend == "call" ? ires = "win" : ires = "lose"));
-                    (ires == "stand") ? (marti -= 0) : ((ires == "lose") ? (marti += 1) : ((marti > 0) ? marti -= 1 : marti -= 0)), sessionStorage.setItem("Martingle", marti);
-                    if (run == true) _run(), sessionStorage.setItem("Result", ires), bs = 0, ss = 0, md = 0, sessionStorage.setItem("Buyer", bs), sessionStorage.setItem("Seller", ss), sessionStorage.setItem("SupDem", md);
+                    if (run == true) _run()
                 }
                 $("#accbal").html('Balance : <b id="abal">' + $("#qa_trading_balance").text().replace(/\,/g, "").replace("Rp", "") + '</b>' + " " + '<b>' + "IDR" + '</b>');
             },
@@ -76,8 +71,8 @@ function inject_bot() {
             return setTimeout(_run, 200);
         } else {
             wamount = $("#dealrisk").val();
-            (ires == "lose") ? (amount = sumdeal * 1.27, sumdeal = amount) : ((ires == "win") ? ((marti > 0) ? (amount = sessionStorage.getItem("martiLot" + marti), sumdeal = amount) : (amount = wamount, sumdeal = amount, sessionStorage.setItem("martiLot" + marti, 0))) : amount = amount);
-            sessionStorage.setItem("martiLot" + marti, parseInt(amount));
+            direct = "lose" == ires ? "call" == direct ? "put" : "call" : "call" == direct ? "call" : "put";
+            ires == "lose" ? (amount = sumdeal * 1.27, sumdeal = amount) : ires == "win" ? (amount = wamount) : amount = amount;
             ref += 1;
             ws.send('{"topic":"base","event":"create_deal","payload":{"asset":"' + $("#assetric").val() + '","expire_at":' + (60 * Math.ceil((Math.ceil(((new Date()).getTime()) / 1E3) + 30) / 60) + 60 * ($("#timesel").val() - 1)) + ',"amount":' + parseInt(amount) + "00" + ',"created_at":' + ((new Date()).getTime()) + ',"option_type":"turbo","deal_type":"' + ($("#refresh-btn").length > 0 ? "demo" : "real") + '","trend":"' + direct + '"},"ref":"' + ref + '","join_ref":"1"}');
         }
