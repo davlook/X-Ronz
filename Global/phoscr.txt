@@ -5,7 +5,7 @@ function inject_bot() {
         deviceId: getCookie("device_id")
     }
     var as, ws, mes, refsave, orate, crate, otrend, intervalWS, wamount, sumdeal, Betmar, ires, amount, acoef, acurr, coef, curr, direct, ref = 1,
-        run = false;
+        opearly = 0, run = false;
 
     var pover = '<div class="list-group" style="padding-bottom:2px;padding-top:5px;"><span class="list-group-item d-flex justify-content-between align-items-center" style="padding:9px;color: crimson;" id="accbal"></span></div><div class="form-group"><select class="bel_form-control" id="assetric" style="color: #f6f7f7;background: #3e3f45;border: none;"></select></div><table class="table container-fluid"> <tbody> <tr> <td style="width:60%"> <div class="input-group"> <input type="number" class="bel_form-control" min="14000" max="14000000" step="100" placeholder="Deal Risk" id="dealrisk" value="14000" style="color: #f6f7f7;background: #3e3f45;border: none;"> </div> </td> <td> <div class="form-group"><select class="bel_form-control" id="timesel" style="color: #f6f7f7;background: #3e3f45;border: none;"><option value="1">1 min</option><option value="2">2 min</option><option value="3">3 min</option><option value="4">4 min</option><option value="5">5 min</option></select></div> </td> </tr> </tbody></table><div style="padding:5px;"></div><syk type=button class="bel_btn bel_btn-success container-fluid _sleep" id="startbot"><strong>START TRADING</strong></syk><div id="durt" style="padding-top:10px"></div>';
     $(".investments").before('<syk type="button" id="mybot" data-toggle="modal" data-target="#myModal" class="spinner-border text-warning" style="margin-bottom:7px;margin-left:4px;"></syk>'),
