@@ -1,5 +1,5 @@
 function inject_bot() {
-    console.log("Source Update 1");
+    console.log("Source Update 1a");
     var info = {
         auth_key: getCookie("authtoken"),
         deviceId: getCookie("device_id")
@@ -22,7 +22,7 @@ function inject_bot() {
         }
     });
 
-    (function() {
+    (function wss() {
         ws = new WebSocket("wss://ws." + location.host + "/?authtoken=" + info.auth_key + "&device=web&device_id=" + info.deviceId + "&v=2&vsn=2.0.0"),
             ws.onopen = () => {
                 console.log('Socket opened!');
@@ -30,7 +30,7 @@ function inject_bot() {
                 (1 == ref) ? (console.log("Success!"), ricas()) : console.log("Failed!");
             },
             ws.onclose = (c) => {
-                c.wasClean ? ref = 1 : console.log('Socket Closed : ', c);
+                ref = 1, clearInterval(intervalWS), console.log("Wss Socket Closed : ", e), wss()
             },
             ws.onmessage = (res) => {
                 // console.log('Message Recieved : ', res.data);
