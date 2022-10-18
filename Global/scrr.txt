@@ -1,0 +1,125 @@
+function inject_bot() {
+    var info = {
+        auth_key: getCookie("authtoken"),
+        deviceId: getCookie("device_id")
+    }
+    var as, ws, mes, refsave, orate, crate, otrend, intervalWS, wamount, sumdeal, Betmar, ires, amount, acoef, acurr, coef, curr, direct, ref = 1,
+        marti = 0, bs = 0, ss = 0, md = 0, run = false;
+
+    var pover = '<div class="list-group" style="padding-bottom:2px;padding-top:5px;"><span class="list-group-item d-flex justify-content-between align-items-center" style="padding:9px;color: crimson;" id="accbal"></span></div><div class="form-group"><select class="bel_form-control" id="assetric" style="color: #f6f7f7;background: #3e3f45;border: none;"></select></div><table class="table container-fluid"> <tbody> <tr> <td style="width:60%"> <div class="input-group"> <input type="number" class="bel_form-control" min="14000" max="14000000" step="100" placeholder="Deal Risk" id="dealrisk" value="14000" style="color: #f6f7f7;background: #3e3f45;border: none;"> </div> </td> <td> <div class="form-group"><select class="bel_form-control" id="timesel" style="color: #f6f7f7;background: #3e3f45;border: none;"><option value="1">1 min</option><option value="2">2 min</option><option value="3">3 min</option><option value="4">4 min</option><option value="5">5 min</option></select></div> </td> </tr> </tbody></table><div style="padding:5px;"></div><syk type=button class="bel_btn bel_btn-success container-fluid _sleep" id="startbot"><strong>START TRADING</strong></syk><div id="durt" style="padding-top:10px"></div>';
+    $(".investments").before('<syk type="button" id="mybot" data-toggle="modal" data-target="#myModal" class="spinner-border text-warning" style="margin-bottom:7px;margin-left:4px;"></syk>'),
+        $('body').append('<div class="modal fade" id="myModal"> <div class="modal-dialog modal-dialog-centered modal-sm"> <div class="modal-content"> <div class="modal-body">' + pover + '</div></div></div></div>');
+
+    $("#accbal").html('Balance : <b id="abal">' + $("#qa_trading_balance").text().replace(/\,/g, "").replace("Rp", "") + '</b>' + " " + '<b>' + "IDR" + '</b>');
+    $('#startbot').click(function() {
+        if ($(this).hasClass("_sleep")) {
+            $("#durt").show("slow"), $(this).removeClass("_sleep"), $(this).addClass("bel_btn-danger"), $(this).text("STOP TRADING");
+            run = true, ires = "win", _run();
+        } else if (!($(this).hasClass("_sleep"))) {
+            $("#durt").hide("slow"), $(this).removeClass("bel_btn-danger"), $(this).addClass("_sleep"), $(this).text("START TRADING");
+            run = false;
+        }
+    });
+
+    (function() {
+        ws = new WebSocket("wss://ws." + location.host + "/?authtoken=" + info.auth_key + "&device=web&device_id=" + info.deviceId + "&v=2&vsn=2.0.0"),
+            ws.onopen = () => {
+                console.log('Socket opened!');
+                ws.send('{"topic":"base","event":"phx_join","payload":{},"ref":"1","join_ref":"1"}');
+                (1 == ref) ? (console.log("Success!"), ricas()) : console.log("Failed!");
+            },
+            ws.onclose = (c) => {
+                c.wasClean ? ref = 1 : console.log('Socket Closed : ', c);
+            },
+            ws.onmessage = (res) => {
+                // console.log('Message Recieved : ', res.data);
+                if ("1" == (mes = $.parseJSON(res.data)).ref) {
+                    if ("ok" != mes.payload.status) {
+                        ws.close(), console.log("Crit.Error!");
+                        return
+                    }
+                    (refsave = ref += 2, ws.send('{"topic":"base","event":"ping","payload":{},"ref":"' + ref + '","join_ref":"1"}'),
+                        intervalWS = setInterval(function() {
+                            ref += 1, ws.send('{"topic":"phoenix","event":"heartbeat","payload":{},"ref":"' + ref + '"}'), ref += 1, ws.send('{"topic":"base","event":"ping","payload":{},"ref":"' + ref + '","join_ref":"1"}')
+                        }, 6E4))
+                }
+                refsave = 0;
+                if (mes.payload.asset == $("#assetric").val()) {
+                    (mes.payload.call == mes.payload.put) ? (md += 1, sessionStorage.setItem("SupDem", md)) : ((mes.payload.call > mes.payload.put) ? (bs += 1, sessionStorage.setItem("Buyer", bs)) : (ss += 1, sessionStorage.setItem("Seller", ss)));
+                    (bs == ss) ? (direct == direct) : ((bs > ss) ? (direct = "call") : (direct = "put"));
+                    sessionStorage.setItem("Direction", direct);
+                }
+                if ("deal_created" == mes.event) {
+                    orate = mes.payload.open_rate, otrend = mes.payload.trend;
+                }
+                if ("close_deal_batch" == mes.event) {
+                    crate = mes.payload.end_rate, (orate == crate) ? (ires = "stand") : ((orate > crate) ? (otrend == "put" ? ires = "win" : ires = "lose") : (otrend == "call" ? ires = "win" : ires = "lose"));
+                    (ires == "stand") ? (marti -= 0) : ((ires == "lose") ? (marti += 1) : ((marti > 0) ? marti -= 1 : marti -= 0)), sessionStorage.setItem("Martingle", marti);
+                    if (run == true) _run(), sessionStorage.setItem("Result", ires), bs = 0, ss = 0, md = 0, sessionStorage.setItem("Buyer", bs), sessionStorage.setItem("Seller", ss), sessionStorage.setItem("SupDem", md);
+                }
+                $("#accbal").html('Balance : <b id="abal">' + $("#qa_trading_balance").text().replace(/\,/g, "").replace("Rp", "") + '</b>' + " " + '<b>' + "IDR" + '</b>');
+            },
+            ws.onerror = (err) => {
+                console.log('Socket Error : ', err);
+            }
+    })();
+
+    async function price() {
+        xh = await fetch("https://api." + location.host + "/platform/candles/" + trass.replace("/", "%2F") + "/" + (new Date).getFullYear() + "-" + ("0" + ((new Date).getMonth() + 1).toString()).slice(-2) + "-" + ("0" + (new Date).getDate().toString()).slice(-2) + "T00:00:00/60?locale=en"), res = await xh.json(), console.log(res.data.slice(-10));
+        var e, t, s = [];
+        for (t in e = res.data.slice(-10)) s.push({ "ric": trass, "timeZ": e[t].created_at, "open": e[t].open, "high": e[t].high, "low": e[t].low, "close": e[t].close }), sessionStorage.setItem("ric-Z", JSON.stringify(s))
+    }
+    function _run() {
+        var procent = parseInt($("#assetric :selected").text().slice(-3));
+        console.log(procent);
+        if (procent < 74) {
+            return setTimeout(_run, 200);
+        } else {
+            wamount = $("#dealrisk").val();
+            (ires == "lose") ? (amount = sumdeal * 1.27, sumdeal = amount) : ((ires == "win") ? ((marti > 0) ? (amount = sessionStorage.getItem("martiLot" + marti), sumdeal = amount) : (amount = wamount, sumdeal = amount, sessionStorage.setItem("martiLot" + marti, 0))) : amount = amount);
+            sessionStorage.setItem("martiLot" + marti, parseInt(amount));
+            ref += 1;
+            ws.send('{"topic":"base","event":"create_deal","payload":{"asset":"' + $("#assetric").val() + '","expire_at":' + (60 * Math.ceil((Math.ceil(((new Date()).getTime()) / 1E3) + 30) / 60) + 60 * ($("#timesel").val() - 1)) + ',"amount":' + parseInt(amount) + "00" + ',"created_at":' + ((new Date()).getTime()) + ',"option_type":"turbo","deal_type":"' + ($("#refresh-btn").length > 0 ? "demo" : "real") + '","trend":"' + direct + '"},"ref":"' + ref + '","join_ref":"1"}');
+        }
+    }
+
+    function ricas() {
+        $.get({
+            url: "https://api." + location.host + "/platform/private/v3/assets?locale=en",
+            xhrFields: {
+                withCredentials: true
+            },
+            headers: {
+                "Authorization-Token": info.auth_key,
+                "Device-Id": info.deviceId,
+                "Device-Type": "web"
+            },
+            success: function(e) {
+                var t = (new Date).getUTCDay();
+
+                function s(e) {
+                    return {
+                        0: "sun", 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat"
+                    }[e]
+                }
+                var o = 10 <= (new Date).getUTCHours() ? (new Date).getUTCHours() + ":" + (new Date).getUTCMinutes() : "0" + (new Date).getUTCHours() + ":" + (new Date).getUTCMinutes();
+                for (var i in e.data.assets) {
+                    if (1 == e.data.assets[i].active && 0 < e.data.assets[i].trading_tools_settings.option.base_payment_rate_turbo && o > e.data.assets[i].trading_tools_settings.option.schedule[s(t)][0][0] && o < e.data.assets[i].trading_tools_settings.option.schedule[s(t)][0][1] && -1 != e.data.assets[i].trading_tools_settings.option.enabled_account_types.indexOf("demo")) {
+                        $('#assetric').append($('<option>').val(e.data.assets[i].ric).text(e.data.assets[i].name + " " + e.data.assets[i].trading_tools_settings.option.base_payment_rate_turbo + "%"));
+                    }
+                }
+            }
+        })
+    }
+
+    function getCookie(name) {
+        var cookieArr = document.cookie.split(";");
+        for (var i = 0; i < cookieArr.length; i++) {
+            var cookiePair = cookieArr[i].split("=");
+            if (name == cookiePair[0].trim()) {
+                return decodeURIComponent(cookiePair[1]);
+            }
+        }
+        return null;
+    }
+}
